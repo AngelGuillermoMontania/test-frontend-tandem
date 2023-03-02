@@ -1,39 +1,178 @@
 <script setup>
-import { ref, onMounted } from "vue";
+import { onMounted, reactive } from "vue";
 import Header from "../components/Header.vue";
 import axios from "axios";
 import router from "../router/index"
 
 
 
-let users = ref(null)
 
 onMounted(async () => {
-    console.log(localStorage.getItem("token"))
     try {
         const data = await axios.get("http://localhost:3001/user", {
             headers: {
                 "Authorization": JSON.parse(localStorage.getItem("token"))
             }
         })
-        console.log(data)
-        users.value = data.data
-        console.log(users.value)
+        state.users = data.data
+        state.copyUsers = data.data
+        console.log(data.data)
     } catch (error) {
-        console.log(users.value)
         router.push("/login")
     }
 })
 
+const state = reactive({
+    users: [],
+    copyUsers: [],
+    search: '',
+    dialog: false,
+    dialogDelete: false,
+    headers: [
+        {
+            title: 'NOMBRE Y APELLIDO',
+            align: 'start',
+            sortable: true,
+            key: 'nombreYApellido',
+        },
+        {
+            title: 'DNI',
+            key: 'dni',
+        },
+        {
+            title: 'USUARIO',
+            key: 'usuario',
+        },
+        {
+            title: 'EMAIL',
+            key: 'email',
+        },
+        {
+            title: 'TELEFONO',
+            key: 'telefono',
+        },
+        { title: 'PASSWORD', key: 'password' },
+        { title: 'Actions', key: 'actions', sortable: false },
+    ],
+    ruleSearch: [
+        value => {
+            if(value) {
+                state.copyUsers = state.users.filter(
+                    user => 
+                    user.nombreYApellido.toLowerCase().includes(value.toLowerCase()) ||
+                    String(user.dni).includes(value.toLowerCase()) ||
+                    user.usuario.toLowerCase().includes(value.toLowerCase()) ||
+                    user.email.toLowerCase().includes(value.toLowerCase()) ||
+                    String(user.telefono).includes(value.toLowerCase()) ||
+                    user.password.toLowerCase().includes(value.toLowerCase())
+                )
+            } else {
+                state.copyUsers = state.users
+            }
+        }
+    ],
+    editedId: -1,
+    deletedId: -1
+})
+
+const editItem = (item) => {
+    state.editedId = item.id
+    /* ROUTER EDIT */
+}
+
+const deleteItem = (item) => {
+    state.deletedId = item.id
+    state.dialogDelete = true
+}
+
+const deleteItemConfirm = () => {
+    state.closeDelete()
+    /* DELETE AXIOS */
+}
+
+const closeDelete = () => {
+    state.dialogDelete = false
+}
 
 </script>
 
 <template>
     <Header />
-    <div v-if="users === null" d-flex>
+    <div v-if="state.users == []" d-flex>
         <v-progress-circular indeterminate color="primary" model-value="20" :size="62" :width="12"></v-progress-circular>
     </div>
-    <div v-else class="mt-16 pt-2">
-        <p>{{ users }}</p>
+    <div v-else class="d-flex justify-center flex-column align-center mt-16 pt-16">
+        <v-text-field
+        v-model="state.search"
+        :rules="state.ruleSearch"
+        append-icon="mdi-magnify"
+        label="Search"
+        single-line
+        class="w-50"
+      ></v-text-field>
+        <v-table fixed-header height="600px" theme="dark" class="elevation-11">
+            <template v-slot:top>
+                <v-toolbar flat>
+                    <v-toolbar-title>USUARIOS</v-toolbar-title>
+                    <v-divider class="mx-4" inset vertical></v-divider>
+                    <v-spacer></v-spacer>
+
+                            <v-btn color="primary" dark class="mb-2" @click="newUser">
+                                New Item
+                            </v-btn>
+                    <v-dialog v-model="state.dialogDelete" max-width="500px">
+                        <v-card>
+                            <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+                                <v-spacer></v-spacer>
+                            </v-card-actions>
+                        </v-card>
+                    </v-dialog>
+                </v-toolbar>
+            </template>
+            <thead class="elevation-14">
+                <tr>
+                    <th class="text-left">
+                        Nombre y Apellido
+                    </th>
+                    <th class="text-left">
+                        DNI
+                    </th>
+                    <th class="text-left">
+                        Usuario
+                    </th>
+                    <th class="text-left">
+                        Email
+                    </th>
+                    <th class="text-left">
+                        Telefono
+                    </th>
+                    <th class="text-left">
+                        Contraseña
+                    </th>
+                    <th class="text-left">
+                        Acciones
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr v-for="user in state.copyUsers" :key="user.id">
+                    <td>{{ user.nombreYApellido }}</td>
+                    <td>{{ user.dni }}</td>
+                    <td>{{ user.usuario }}</td>
+                    <td>{{ user.email }}</td>
+                    <td>{{ user.telefono }}</td>
+                    <td>{{ user.password }}</td>
+                    <td class="d-flex justify-space-around align-center">
+                        <v-icon size="small" icon="mdi-pencil" @click="editItem(user)" />
+                        <v-icon size="small" icon="mdi-delete" @click="deleteItem(user)" />
+                    </td>
+                </tr>
+            </tbody>
+        </v-table>
+
     </div>
 </template>
