@@ -1,3 +1,14 @@
+<script setup>
+import router from '../router';
+
+
+function logOut() {
+    localStorage.removeItem("token")
+    router.push("/login")
+}
+
+</script>
+
 <template>
     <v-layout>
         <v-app-bar color="teal-darken-4" image="https://picsum.photos/1920/1080?random" :elevation="11">
@@ -14,7 +25,7 @@
             </v-app-bar-title>
 
 
-            <v-btn prepend-icon="close" variant="outlined" color="error" size="small">
+            <v-btn prepend-icon="mdi-close-thick" variant="outlined" color="error" size="small" @click="logOut()">
                 Cerrar sesion
             </v-btn>
         </v-app-bar>
