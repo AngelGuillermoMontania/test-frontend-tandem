@@ -5,30 +5,40 @@ import router from "../router";
 
 const state = reactive({
   valid: false,
-  user: "",
-  userRules: [
+  usuario: "",
+  usuarioRules: [
     value => {
       if (value) return true
 
-      return "Name is requred."
+      return "Usuario es requerido."
     },
     value => {
-      if (value?.length > 2) return true
+      if (value.length) return true
 
-      return "Name must be less than 10 characters."
+      return "Usuario debe ser texto."
+    },
+    value => {
+      if (value?.length >= 2 && value.length <= 50) return true
+
+      return "Minimo 2 caracteres. Maximo 50"
     },
   ],
   password: "",
   passRules: [
-    value => {
+  value => {
       if (value) return true
 
-      return "Password is requred."
+      return "Password es requerido"
     },
     value => {
-      if (value) return true
+      if (value.length) return true
 
-      return "Password must be valid."
+      return "Password debe ser un texto"
+    },
+    value => {
+      if (value.length >= 2 && value.length < 50) return true
+
+      return "Minimo 2 caracteres. Maximo 50"
     },
   ],
   snackbar: false,
@@ -37,15 +47,15 @@ const state = reactive({
 const onSubmit = async (event) => {
   if (state.valid) {
     try {
-      const data = await axios.post("http://localhost:3001/user/login", {
-        usuario: state.user,
+      const { data } = await axios.post("http://localhost:3001/user/login", {
+        usuario: state.usuario,
         password: state.password
       })
-      localStorage.setItem("token", JSON.stringify(`Bearer ${data.data.token}`))
+      localStorage.setItem("token", JSON.stringify(`Bearer ${data.token}`))
       router.push("/")
     } catch (error) {
       state.snackbar = true
-      state.user = ""
+      state.usuario = ""
       state.password = ""
     }
   }
@@ -62,33 +72,27 @@ const onSubmit = async (event) => {
     <v-container>
       <v-row>
         <v-col cols="12" md="6">
-          <v-text-field class="text-cyan-lighten-5" v-model="state.user" :rules="state.userRules" :counter="10"
-            label="User" required></v-text-field>
+          <v-text-field class="text-cyan-lighten-5" v-model="state.usuario" :rules="state.usuarioRules" :counter="10"
+            label="Usuario" autocomplete="username" required></v-text-field>
         </v-col>
 
         <v-col cols="12" md="6">
           <v-text-field class="text-cyan-lighten-5" v-model="state.password" :rules="state.passRules" :counter="10"
-            label="Password" type="password" required></v-text-field>
+            label="Password" type="password" autocomplete="current-password" required></v-text-field>
         </v-col>
       </v-row>
-      <v-btn type="submit" block class="mt-2" color="blue-grey">Submit</v-btn>
+      <v-btn type="submit" block class="mt-2" color="blue-grey">Iniciar sesion</v-btn>
     </v-container>
   </v-form>
   <template>
     <div class="text-center">
       <v-snackbar v-model="state.snackbar">
-        Invalid user or password
+        Usuario o contraseña invalida
       </v-snackbar>
     </div>
   </template>
 </template>
 
 <style>
-/* @media (min-width: 1024px) {
-  .about {
-    min-height: 100vh;
-    display: flex;
-    align-items: center;
-  }
-} */
+
 </style>

@@ -9,20 +9,20 @@ import router from "../router/index"
 
 onMounted(async () => {
     try {
-        const data = await axios.get("http://localhost:3001/user", {
+        const { data } = await axios.get("http://localhost:3001/user", {
             headers: {
                 "Authorization": JSON.parse(localStorage.getItem("token"))
             }
         })
-        state.users = data.data
-        state.copyUsers = data.data
-        console.log(data.data)
+        state.users = data
+        state.copyUsers = data
     } catch (error) {
         router.push("/login")
     }
 })
 
 const state = reactive({
+    snackbar: false,
     users: [],
     copyUsers: [],
     search: '',
@@ -56,15 +56,15 @@ const state = reactive({
     ],
     ruleSearch: [
         value => {
-            if(value) {
+            if (value) {
                 state.copyUsers = state.users.filter(
-                    user => 
-                    user.nombreYApellido.toLowerCase().includes(value.toLowerCase()) ||
-                    String(user.dni).includes(value.toLowerCase()) ||
-                    user.usuario.toLowerCase().includes(value.toLowerCase()) ||
-                    user.email.toLowerCase().includes(value.toLowerCase()) ||
-                    String(user.telefono).includes(value.toLowerCase()) ||
-                    user.password.toLowerCase().includes(value.toLowerCase())
+                    user =>
+                        user.nombreYApellido.toLowerCase().includes(value.toLowerCase()) ||
+                        String(user.dni).includes(value.toLowerCase()) ||
+                        user.usuario.toLowerCase().includes(value.toLowerCase()) ||
+                        user.email.toLowerCase().includes(value.toLowerCase()) ||
+                        String(user.telefono).includes(value.toLowerCase()) ||
+                        user.password.toLowerCase().includes(value.toLowerCase())
                 )
             } else {
                 state.copyUsers = state.users
@@ -77,7 +77,7 @@ const state = reactive({
 
 const editItem = (item) => {
     state.editedId = item.id
-    /* ROUTER EDIT */
+    router.push(`/createEdit?id=${item.id}`)
 }
 
 const deleteItem = (item) => {
@@ -85,13 +85,29 @@ const deleteItem = (item) => {
     state.dialogDelete = true
 }
 
-const deleteItemConfirm = () => {
-    state.closeDelete()
-    /* DELETE AXIOS */
+const deleteItemConfirm = async () => {
+    try {
+        const dataDelete = axios.delete(`http://localhost:3001/user/${state.deletedId}`, {
+            headers: {
+                "Authorization": JSON.parse(localStorage.getItem("token"))
+            }
+        })
+        const dataGet = await axios.get("http://localhost:3001/user", {
+            headers: {
+                "Authorization": JSON.parse(localStorage.getItem("token"))
+            }
+        })
+        state.users = dataGet.data
+        state.copyUsers = dataGet.data
+        state.dialogDelete = false
+    } catch (error) {
+        state.snackbar = true
+        state.dialogDelete = false
+    }
 }
 
-const closeDelete = () => {
-    state.dialogDelete = false
+const newUser = () => {
+    router.push("/createEdit")
 }
 
 </script>
@@ -102,31 +118,26 @@ const closeDelete = () => {
         <v-progress-circular indeterminate color="primary" model-value="20" :size="62" :width="12"></v-progress-circular>
     </div>
     <div v-else class="d-flex justify-center flex-column align-center mt-16 pt-16">
-        <v-text-field
-        v-model="state.search"
-        :rules="state.ruleSearch"
-        append-icon="mdi-magnify"
-        label="Search"
-        single-line
-        class="w-50"
-      ></v-text-field>
-        <v-table fixed-header height="600px" theme="dark" class="elevation-11">
+        
+        <v-text-field v-model="state.search" :rules="state.ruleSearch" append-icon="mdi-magnify" label="Buscar" single-line
+            class="w-50"></v-text-field>
+        <v-table fixed-header fixed-footer height="600px" theme="dark" class="elevation-11 mb-16">
             <template v-slot:top>
                 <v-toolbar flat>
                     <v-toolbar-title>USUARIOS</v-toolbar-title>
                     <v-divider class="mx-4" inset vertical></v-divider>
                     <v-spacer></v-spacer>
 
-                            <v-btn color="primary" dark class="mb-2" @click="newUser">
-                                New Item
-                            </v-btn>
-                    <v-dialog v-model="state.dialogDelete" max-width="500px">
+                    <v-btn color="primary" dark class="mb-2" prepend-icon="mdi-account-plus" @click="newUser">
+                        Nuevo usuario
+                    </v-btn>
+                    <v-dialog v-model="state.dialogDelete" max-width="700px">
                         <v-card>
-                            <v-card-title class="text-h5">Are you sure you want to delete this item?</v-card-title>
+                            <v-card-title class="text-h5 text-center">¿Estas seguro deseas eliminar a este usuario?</v-card-title>
                             <v-card-actions>
                                 <v-spacer></v-spacer>
-                                <v-btn color="blue-darken-1" variant="text" @click="closeDelete">Cancel</v-btn>
-                                <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">OK</v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="state.dialogDelete = false">Cancelar</v-btn>
+                                <v-btn color="blue-darken-1" variant="text" @click="deleteItemConfirm">SI</v-btn>
                                 <v-spacer></v-spacer>
                             </v-card-actions>
                         </v-card>
@@ -153,7 +164,7 @@ const closeDelete = () => {
                     <th class="text-left">
                         Contraseña
                     </th>
-                    <th class="text-left">
+                    <th class="text-center">
                         Acciones
                     </th>
                 </tr>
@@ -175,4 +186,12 @@ const closeDelete = () => {
         </v-table>
 
     </div>
+    <template>
+        <div class="text-center">
+            <v-snackbar v-model="state.snackbar">
+                The user could not be deleted
+            </v-snackbar>
+        </div>
+    </template>
+    
 </template>
