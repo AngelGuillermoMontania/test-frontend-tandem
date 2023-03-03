@@ -1,29 +1,21 @@
-# test-frontend-tandem
+# ***Test de conocimientos -- Tándem Digital***
 
-This template should help get you started developing with Vue 3 in Vite.
+<br>
 
-## Recommended IDE Setup
+### La aplicacion fue creada con `Vite`, `axios`, `vue-router` y `vuetify`. El objetivo de este test es evaluar la capacidad de la persona para diseñar y desarrollar una aplicación web completa utilizando Vue.js en el front-end, Node.js en el back-end y SQL Server como base de datos.
 
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur) + [TypeScript Vue Plugin (Volar)](https://marketplace.visualstudio.com/items?itemName=Vue.vscode-typescript-vue-plugin).
+<br>
 
-## Customize configuration
+#### Repositorio back-end, base de datos: https://github.com/AngelGuillermoMontania/test-backend-tandem
 
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+<br>
+<br>
 
-## Project Setup
+Como iniciar la app:
 
-```sh
-npm install
-```
-
-### Compile and Hot-Reload for Development
-
-```sh
-npm run dev
-```
-
-### Compile and Minify for Production
-
-```sh
-npm run build
-```
+1. Descargar el proyecto
+3. Agregar un archivo `.env` en la raiz del proyecto. Colocar en esta unica variable de entorno la direccion base de el back end.
+    - `VITE_API_BASE_URL = `
+2. Instalar las dependencias mediante la terminal ejecutando el comando `npm install` en la raiz del proyecto
+4. Escribir el comando `npm run dev` en una terminal, en el directorio raiz para ejecutar la aplicacion en modo desarrollador.
+5. LISTO!
