@@ -14,7 +14,7 @@ const router = createRouter({
       component: () => import("../views/LoginView.vue")
     },
     {
-      path: "/:typeOp/:id",
+      path: "/createEdit",
       name: "editCreate",
       component: () => import("../views/EditCreateView.vue")
     }

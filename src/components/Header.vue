@@ -17,9 +17,10 @@ function logOut() {
             </template>
 
             <v-app-bar-title style="width: fit-content;">
-                <RouterLink to="/" style="text-decoration: none; color: inherit; width: fit-content; display: flex;">
-                    <v-img height="50" width="100" aspect-ratio="16/9"
-                        src="https://www.tandemdigital.net/images/TandemLogo2.png">
+                <RouterLink to="/" style="padding-left: 15px;text-decoration: none; color: inherit; width: fit-content; display: flex;">
+                    <v-img height="50" width="100" aspect-ratio="16/9" class="img-tandem"
+                        src="https://www.tandemdigital.net/images/TandemLogo2.png"
+                        style="overflow: visible;">
                     </v-img>
                 </RouterLink>
             </v-app-bar-title>
@@ -31,3 +32,14 @@ function logOut() {
         </v-app-bar>
     </v-layout>
 </template>
+
+<style>
+
+    .img-tandem {
+        transition: all 0.5s ease-in-out;
+    }
+
+    .img-tandem:hover {
+        transform: scale(1.2);
+    }
+</style>
