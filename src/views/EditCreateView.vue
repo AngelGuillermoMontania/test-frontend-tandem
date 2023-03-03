@@ -3,7 +3,7 @@ import { onMounted, reactive } from "vue";
 import Header from "../components/Header.vue";
 import axios from "axios";
 import router from "../router/index"
-import { useRoute } from 'vue-router'
+import { useRoute } from "vue-router"
 
 const route = useRoute()
 
@@ -117,11 +117,11 @@ const state = reactive({
 
 onMounted(async () => {
   try {
-    if(!localStorage.getItem("token")) {
+    if(!localStorage.getItem("token")) { // If you do not have a token, you reject the promise
       new Promise.reject()
     }
-    if(route.query.id) {
-      const {data} = await axios.get(`http://localhost:3001/user/${route.query.id}`, {
+    if(route.query.id) { // If id exists in the query, it is edicion
+      const {data} = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/user/${route.query.id}`, {
         headers: {
           "Authorization": JSON.parse(localStorage.getItem("token"))
         }
@@ -142,10 +142,10 @@ onMounted(async () => {
 
 
 const onSubmit = async (event) => {
-  if (state.valid || state.valid === null && route.query.id) {
+  if (state.valid || state.valid === null && route.query.id) { // Valid at startup has a value of null, I make sure it does not fail.
     try {
-      if (route.query.id) {
-        const data = await axios.put(`http://localhost:3001/user/${state.id}`, {
+      if (route.query.id) {  // Edit
+        const data = await axios.put(`${import.meta.env.VITE_API_BASE_URL}/user/${state.id}`, {
           nombreYApellido: state.nombreYApellido,
           usuario: state.usuario,
           email: state.email,
@@ -156,8 +156,8 @@ const onSubmit = async (event) => {
                 "Authorization": JSON.parse(localStorage.getItem("token"))
             }
         })
-      } else {
-        const data = await axios.post("http://localhost:3001/user", {
+      } else {  // Create
+        const data = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/user`, {
           nombreYApellido: state.nombreYApellido,
           usuario: state.usuario,
           email: state.email,
@@ -187,7 +187,7 @@ const onSubmit = async (event) => {
       color="cyan"
       size="large"
       label
-      v-if="state.id"
+      v-if="state.id" 
     >
       <v-icon start icon="mdi-pencil"></v-icon>
       Editando...
@@ -205,32 +205,76 @@ const onSubmit = async (event) => {
     <v-container>
       <v-row>
         <v-col cols="12" :md="12" v-if="state.id">
-          <v-text-field class="text-cyan-lighten-5" v-model="state.nombreYApellido" :rules="state.nombreYApellidoRules"
-            :counter="10" label="Nombre y apellido" required></v-text-field>
+          <v-text-field 
+            class="text-cyan-lighten-5" 
+            v-model="state.nombreYApellido" 
+            :rules="state.nombreYApellidoRules"
+            :counter="10" 
+            label="Nombre y apellido" 
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="12" :md="6" v-else>
-          <v-text-field class="text-cyan-lighten-5" v-model="state.nombreYApellido" :rules="state.nombreYApellidoRules"
-            :counter="10" label="Nombre y apellido" required></v-text-field>
+          <v-text-field 
+            class="text-cyan-lighten-5" 
+            v-model="state.nombreYApellido" 
+            :rules="state.nombreYApellidoRules"
+            :counter="10" 
+            label="Nombre y apellido" 
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6" v-if="!state.id">
-          <v-text-field class="text-cyan-lighten-5" v-model="state.dni" :rules="state.dniRules" :counter="10" label="DNI"
-            type="number" required></v-text-field>
+          <v-text-field 
+            class="text-cyan-lighten-5" 
+            v-model="state.dni" 
+            :rules="state.dniRules" 
+            :counter="10" 
+            label="DNI"
+            type="number" 
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field class="text-cyan-lighten-5" v-model="state.usuario" :rules="state.usuarioRules" :counter="10"
-            label="Usuario" required></v-text-field>
+          <v-text-field 
+            class="text-cyan-lighten-5" 
+            v-model="state.usuario" 
+            :rules="state.usuarioRules" 
+            :counter="10"
+            label="Usuario" 
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field class="text-cyan-lighten-5" v-model="state.email" :rules="state.emailRules" :counter="10"
-            label="Email" required></v-text-field>
+          <v-text-field 
+            class="text-cyan-lighten-5" 
+            v-model="state.email" 
+            :rules="state.emailRules" 
+            :counter="10"
+            label="Email" 
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field class="text-cyan-lighten-5" v-model="state.telefono" :rules="state.telefonoRules" :counter="10"
-            label="Telefono" type="number" required></v-text-field>
+          <v-text-field 
+            class="text-cyan-lighten-5" 
+            v-model="state.telefono" 
+            :rules="state.telefonoRules" 
+            :counter="10"
+            label="Telefono" 
+            type="number" 
+            required
+          ></v-text-field>
         </v-col>
         <v-col cols="12" md="6">
-          <v-text-field class="text-cyan-lighten-5" v-model="state.password" :rules="state.passwordRules" :counter="10"
-            label="Password" required></v-text-field>
+          <v-text-field 
+            class="text-cyan-lighten-5" 
+            v-model="state.password" 
+            :rules="state.passwordRules" 
+            :counter="10"
+            label="Password" 
+            required
+          ></v-text-field>
         </v-col>
       </v-row>
       <v-btn type="submit" block class="mt-2" color="blue-grey">Guardar</v-btn>
