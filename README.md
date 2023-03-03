@@ -19,3 +19,5 @@ Como iniciar la app:
 2. Instalar las dependencias mediante la terminal ejecutando el comando `npm install` en la raiz del proyecto
 4. Escribir el comando `npm run dev` en una terminal, en el directorio raiz para ejecutar la aplicacion en modo desarrollador.
 5. LISTO!
+
+EN EL SCRIPT YA VIENE CONFIGURADO UN USUARIO CON USUARIO: admin CON CONTRASEÑA admin
